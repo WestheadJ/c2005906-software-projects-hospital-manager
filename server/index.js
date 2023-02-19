@@ -1,13 +1,13 @@
 const express = require('express')
 const sqlite = require('sqlite3')
 const app = express()
-
+const cors = require('cors')
 const networkInterface = require('os').networkInterfaces()
 const IP = networkInterface['en0'][1].address
 
 const db = sqlite
 
-
+app.use(cors())
 
 app.get('/test',(req,res)=>{
         res.send("Received!")

@@ -1,0 +1,33 @@
+body{
+    background-color: #E0FBFC;
+}
+
+input{
+    margin:5px 10px 10px 10px;
+}
+
+label{
+    margin: 5px 10px 5px 10px;
+    font-size: x-large;
+}
+
+hr{
+    background-color: black;
+    height: 3px;
+}
+
+#registerContainer{
+    background-color: #E0FBFC;
+    width:  40%;
+    min-width: 20rem;
+    max-width: 37rem;
+    margin: 15% auto 15% auto;
+    border: black solid 1px;
+}
+
+#registerButton{
+    width: 80px;
+    margin: 5px 5px 10px 5px;
+    float:inline-end;
+    font-weight: x-large;
+}

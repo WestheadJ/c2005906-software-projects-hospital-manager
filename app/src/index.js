@@ -1,12 +1,35 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import './styles/index.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import {createBrowserRouter,RouterProvider} from "react-router-dom"
+import Dashboard from './pages/Dashboard';
+import ErrorPage from './pages/ErrorPage';
+import Login from './pages/Login'
+import Register from './pages/Register';
+
+
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <Dashboard/>,
+      errorElement: <ErrorPage/>
+    },
+    {
+      path:"/login",
+      element:<Login/>
+    },
+    {
+      path:"/register",
+      element:<Register/>
+    }
+  ]
+)
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );

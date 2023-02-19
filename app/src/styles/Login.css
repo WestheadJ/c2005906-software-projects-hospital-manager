@@ -1,0 +1,40 @@
+body{
+    background-color: #E0FBFC;
+}
+
+input{
+    margin:5px 10px 10px 10px;
+    border-radius: 35px;
+    border: none;
+    height:35px;
+}
+
+label{
+    margin: 5px 10px 5px 10px;
+    font-size: x-large;
+}
+
+hr{
+    background-color: black;
+    height: 3px;
+}
+
+#loginContainer{
+    background-color: #98C1D9;
+    width:  50%;
+    min-width: 20rem;
+    max-width: 35rem;
+    margin: 15% auto auto auto;
+    border: black solid 1px;
+}
+
+#loginButton{
+    width: 80px;
+    margin: 5px 5px 10px 75%;
+    float :right;
+    font-weight: x-large;
+}
+
+#register-link{
+    margin: 20px 0 10px 10px;
+}

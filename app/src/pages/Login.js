@@ -3,7 +3,6 @@ import { Card,Button,Dropdown,DropdownButton } from 'react-bootstrap'
 import "../styles/Login.css"
 import {Link, useNavigate} from "react-router-dom"
 import axios from "axios"
-import "../styles/ErrorPage.css"
 import {BsEyeFill,BsEyeSlashFill} from "react-icons/bs"
 import {v4 as uuid} from "uuid"
 import { storageHandler } from '../components/localStorageHandler'
@@ -53,7 +52,7 @@ export default function Login() {
             }
         }
     }
-
+    
     return (
             <div style={{margin:"auto"}}>
                 <Card id="loginContainer">
@@ -61,7 +60,7 @@ export default function Login() {
                     <hr/>
                     <Card.Body style={{display:'flex',flexDirection:"column"}}>
                         
-                        <h4 id='error'>{error}</h4>
+                        {error ? <><h4 id='error'>{error}</h4></>:<></>} 
 
                         <label>Logging in as?</label>
                         <>

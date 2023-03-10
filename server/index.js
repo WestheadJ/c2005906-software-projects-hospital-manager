@@ -2,8 +2,12 @@ const express = require('express')
 const sqlite = require('sqlite3')
 const app = express()
 const cors = require('cors')
+const { hospitalCode } = require('./configs/config')
 const networkInterface = require('os').networkInterfaces()
 const IP = networkInterface['en0'][1].address
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.use(cors({
     origin: 'http://localhost:3000',
@@ -31,7 +35,6 @@ app.get('/login',(req,res)=>{
                     else{
                         return res.send({state:true,data:row.Nurse_Id})
                     }
-                    // console.log(row.Nurse_Email,row.Nurse_Password)
                 }
                 
                 
@@ -62,7 +65,7 @@ app.get('/login',(req,res)=>{
 
 app.get("/get/paitents/nurse",(req,res)=>{
     const id = req.query.nurse_id
-    const sql = "SELECT DISTINCT Paitents.Paitent_Id,Paitents.Paitent_Forename FROM Paitents INNER JOIN Wards on Paitents.Ward_Id = Wards.Ward_id INNER JOIN Nurses on Wards.Ward_Manager = ?"
+    const sql = "SELECT DISTINCT Paitents.Paitent_Id,Paitents.Paitent_Forename,Paitents.Paitent_Surname,Paitents.Ward_Id FROM Paitents INNER JOIN Wards on Paitents.Ward_Id = Wards.Ward_id INNER JOIN Nurses on Wards.Ward_Manager = ?"
     db.all(sql,[id],(err,rows)=>{
         if(err){
             console.log(err)
@@ -85,6 +88,47 @@ app.get("/get/paitents/doctor",(req,res)=>{
             return res.send(rows)
         }
     })
+})
+
+app.post("/register",(req,res)=>{
+    const submittedHospitalCode = req.body.hospitalCode
+    if(submittedHospitalCode == hospitalCode){
+        const submittedRole = req.body.role
+        const submittedForename = req.body.forename
+        const submittedSurname = req.body.surname
+        const submittedEmail = req.body.email
+        const submittedPassword = req.body.password
+        const submittedMobileNumber = req.body.mobileNumber
+        console.log(req.body)
+        if(submittedRole === "Nurse" ){
+            const sql = "INSERT INTO Nurses(Nurse_Firstname,Nurse_Surname,Nurse_Mobile_Number,Nurse_Email,Nurse_Password) VALUES (?,?,?,?,?)"
+            db.serialize(()=>{db.run(sql,[submittedForename,submittedSurname,submittedMobileNumber,submittedEmail,submittedPassword],(err)=>{
+                if(err){
+                    console.log(err)
+                    return res.send(false)
+                }
+                else{
+                    return res.send(true)
+                }
+            })})
+        }
+        else if(submittedRole === "Doctor"){
+            const sql = "INSERT INTO Doctors(Doctor_Forename,Doctor_Surname,Doctor_Mobile_Number,Doctor_Email,Doctor_Password) VALUES (?,?,?,?,?)"
+            db.serialize(()=>{db.run(sql,[submittedForename,submittedSurname,submittedMobileNumber,submittedEmail,submittedPassword],(err)=>{
+                if(err){
+                    console.log(err)
+                    return res.send(false)
+                }
+                else{
+                    return res.send(true)
+                }
+            })})
+        }
+    }
+    else{
+        return res.send(false)
+    }
+
 })
 
 const PORT = 3001;

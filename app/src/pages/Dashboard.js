@@ -1,12 +1,14 @@
 import axios from 'axios'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { storageHandler } from '../components/localStorageHandler'
+import NavBarHeader from '../components/NavBarHeader'
+import Paitents from '../components/Paitents'
 import { IP } from '../configs/configs'
 import "../styles/Dashboard.css"
 
 export default function Dashboard() {
-
+    
     const localStorageHandler = new storageHandler()
 
     const navigate = useNavigate()
@@ -17,8 +19,10 @@ export default function Dashboard() {
     const storedId = storage.id
     const storedToken = storage.token
 
+    const [data , setData] = useState([])
+
     useEffect(()=>{
-    
+        console.log(location.state)
         if(location.state == null){
             localStorageHandler.clearLocalStorage()
             return navigate("/login",{replace:true})
@@ -30,13 +34,12 @@ export default function Dashboard() {
             }
         }
         if(location.state.role === "Nurse"){
-            console.log("YOU'RE A NURSE")
+
             getNursesPaitents()
-            
         }
         if(location.state.role === "Doctor"){
-            console.log("YOURE A DOCTOR")
             getDoctorsPaitents()
+        
         }
         },[])
         
@@ -46,8 +49,16 @@ export default function Dashboard() {
                     nurse_id:location.state.id
                 }
             })
-            .then((response)=>{
+            .then(async (response)=>{
                 console.log(response.data)
+                setData(response.data)
+                // setLoading(true)
+                console.log(data)
+                
+            })
+            .catch(err=>{
+                console.log(err)
+                // setLoading(false)
             })
         }
 
@@ -59,10 +70,18 @@ export default function Dashboard() {
             })
             .then((response)=>{
                 console.log(response.data)
+                return response.data
             })
+            .catch((err)=>console.log(err))
         }
 
     return(
-        <>Dashboard </>
+        <>
+            <div>
+                {location.state == null ? <></> : <NavBarHeader role={location.state.role} person_id={location.state.id} />}
+            </div>
+            <Paitents data={data}/>
+            
+        </>
     )
 }

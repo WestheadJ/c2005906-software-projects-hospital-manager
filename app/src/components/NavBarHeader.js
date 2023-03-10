@@ -3,7 +3,7 @@ import {Container,Navbar,Nav} from "react-bootstrap"
 import "../styles/NavBarHeader.css"
 import {useNavigate} from "react-router-dom"
 
-export default function NavBarHeader() {
+export default function NavBarHeader({role,person_id}) {
     const navigate = useNavigate();
 
     function logout(){
@@ -12,7 +12,7 @@ export default function NavBarHeader() {
     return (
         <Navbar style={{backgroundColor: "#3D5A80"}} id='#navbar-header' expand="lg">
             <Container>
-                <Navbar.Brand id="navbar-brand" href="#home">ID No:</Navbar.Brand>
+                    <h3><span style={{color:'#EE6C4D'}}>{role}</span> : {person_id}</h3>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse className="justify-content-end">   
                     <Nav >

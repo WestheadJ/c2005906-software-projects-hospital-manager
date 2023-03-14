@@ -2,6 +2,7 @@ const express = require('express')
 const sqlite = require('sqlite3')
 const app = express()
 const cors = require('cors')
+const fs = require('fs')
 const { hospitalCode } = require('./configs/config')
 const networkInterface = require('os').networkInterfaces()
 const IP = networkInterface['en0'][1].address
@@ -14,6 +15,53 @@ app.use(cors({
 }));
 
 const db = new sqlite.Database('configs/hospital-management.db')
+
+const folderName = "data"
+
+try{
+    if(!fs.existsSync(folderName)){
+        fs.mkdirSync(folderName)
+        
+        
+    }
+    const sql = "SELECT Paitent_id FROM Paitents"
+    db.all(sql,(err,rows)=>{
+        
+        if(err){
+            console.log(err)
+        }
+        else{
+            const dataFiles = fs.readdirSync(folderName)
+            if(dataFiles.length === 0){
+                rows.forEach(id=>{
+                    var boilerPlate = 
+                        {
+                            "Paitent_id":id.Paitent_Id,
+                            "Medications":[],
+                            "Healthcare_Plan":[]
+                        }
+                    var contents = JSON.stringify(boilerPlate)
+                    
+                    fs.writeFile(`data/${id.Paitent_Id}.json`,contents,err=>{
+                        if(err){
+                            console.log(err)
+                        }
+                        else{
+                            console.log('Successful')
+                        }
+                    })
+                })
+            }
+        }
+    })
+}
+catch (err){
+    console.log(err)
+}
+
+const PORT = 3001;
+
+app.listen(PORT, () => console.log(`Server address is: http://${IP}:${PORT} \nTo test go to: http://${IP}:${PORT}/test `));
 
 app.get('/test',(req,res)=>res.send("<h1>Test Endpoint</h1>"))
 
@@ -90,6 +138,14 @@ app.get("/get/paitents/doctor",(req,res)=>{
     })
 })
 
+app.get("/get/paitents/file",(req,res)=>{
+    const id = req.query.given_id
+    const role = req.query.given_role
+    fs.readFile(`data/${id}.json`,(err,contents)=>{
+        
+    })
+})
+
 app.post("/register",(req,res)=>{
     const submittedHospitalCode = req.body.hospitalCode
     if(submittedHospitalCode == hospitalCode){
@@ -131,6 +187,3 @@ app.post("/register",(req,res)=>{
 
 })
 
-const PORT = 3001;
-
-app.listen(PORT, () => console.log(`Server address is: http://${IP}:${PORT} \nTo test go to: http://${IP}:${PORT}/test `));

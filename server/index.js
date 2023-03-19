@@ -20,9 +20,7 @@ const folderName = "data"
 
 try{
     if(!fs.existsSync(folderName)){
-        fs.mkdirSync(folderName)
-        
-        
+        fs.mkdirSync(folderName)   
     }
     const sql = "SELECT Paitent_id FROM Paitents"
     db.all(sql,(err,rows)=>{
@@ -38,7 +36,8 @@ try{
                         {
                             "Paitent_id":id.Paitent_Id,
                             "Medications":[],
-                            "Healthcare_Plan":[]
+                            "Healthcare_Plan":[],
+                            "Records":[]
                         }
                     var contents = JSON.stringify(boilerPlate)
                     
@@ -138,12 +137,36 @@ app.get("/get/paitents/doctor",(req,res)=>{
     })
 })
 
-app.get("/get/paitents/file",(req,res)=>{
+app.get("/get/patients/file",(req,res)=>{
     const id = req.query.given_id
     const role = req.query.given_role
-    fs.readFile(`data/${id}.json`,(err,contents)=>{
+    if(role === "Doctor"){
+        var data
+        fs.readFile(`data/${id}.json`,(err,contents)=>{
+            if(err){
+                return res.send(err)
+            }
+            else{
+                data = JSON.parse(contents)
+            return res.json({"Medications":data.Medications,"Healthcare_Plan":data.Healthcare_Plan,"Records":data.Records})
+
+            }
+        })
         
-    })
+    }
+    else if(role === "Nurse"){
+        fs.readFile(`data/${id}.json`,(err,contents)=>{
+            if(err){
+                return res.send(err)
+            }
+            else{
+                data = JSON.parse(contents)
+                console.log(data)
+                return res.json({"Medications":data.Medications,"Healthcare_Plan":data.Healthcare_Plan})
+            }
+        })
+    }
+    
 })
 
 app.post("/register",(req,res)=>{

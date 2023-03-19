@@ -80,7 +80,7 @@ export default function Dashboard() {
             <div>
                 {location.state == null ? <></> : <NavBarHeader role={location.state.role} person_id={location.state.id} />}
             </div>
-            <Paitents data={data}/>
+            <Paitents data={data} role={location.state.role}/>
             
         </>
     )

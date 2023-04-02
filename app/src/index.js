@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import ErrorPage from './pages/ErrorPage';
 import Login from './pages/Login'
 import Register from './pages/Register';
+import PatientProfile from './pages/PatientProfile';
 
 
 const router = createBrowserRouter(
@@ -23,6 +24,10 @@ const router = createBrowserRouter(
     {
       path:"/register",
       element:<Register/>
+    },
+    {
+      path:"/patient-profile",
+      element: <PatientProfile/>
     }
   ]
 )

@@ -8,12 +8,9 @@ import "../styles/Dashboard.css"
 import Authenticator from '../components/authenticator'
 
 export default function Dashboard() {
-    
 
     const navigate = useNavigate()
     const location = useLocation()
-
-    
 
     const [data , setData] = useState([])
 
@@ -39,7 +36,6 @@ export default function Dashboard() {
                 }
             })
             .then(async (response)=>{
-                console.log(response.data)
                 setData(response.data)
                 // setLoading(true)
                 console.log(data)
@@ -59,7 +55,7 @@ export default function Dashboard() {
             })
             .then((response)=>{
                 console.log(response.data)
-                return response.data
+                return setData(response.data)
             })
             .catch((err)=>console.log(err))
         }
@@ -67,10 +63,11 @@ export default function Dashboard() {
     return(
         <>
             <Authenticator />
-            {/* <div>
+            <div>
                 {location.state == null ? <></> : <NavBarHeader role={location.state.role} person_id={location.state.id} />}
             </div>
-            <Paitents data={data} role={location.state.role}/> */}
+
+            <Paitents data={data} role={location.state.role}/>
             
         </>
     )

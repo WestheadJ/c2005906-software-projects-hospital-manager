@@ -1,9 +1,17 @@
 
 import axios from "axios"
 import { IP } from "../configs/configs"
+import { useEffect } from "react"
+import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function Paitents({data,role}) {
-    
+
+    const navigate = useNavigate()
+
+    function toPatientsProfile(patient_id){
+        navigate("/patient-profile")
+    }
+
     async function getPatientsInfo(patient){
         await axios.get(`${IP}/get/patients/file`,{
             params:{
@@ -21,15 +29,15 @@ export default function Paitents({data,role}) {
         <>
             <div style={{width:"100%",display:'flex',flexDirection:'column',alignItems:"center",}}>
                 <div style={{width:'50%'}}>
-            {data.map((paitent)=>{
+            {data.map((patient)=>{
                 return(
-                        <div onClick={()=>getPatientsInfo(paitent)} class="patient-card">
+                        <div key={patient.Patient_Id} className="patient-card" onClick={toPatientsProfile(patient.Patient_Id)}>
                             <span stlye={{float:"left"}}>
-                                {paitent.Paitent_Forename}
-                                {paitent.Paitent_Surname}
+                                {patient.Paitent_Forename}
+                                {patient.Paitent_Surname}
                             </span>
                             <span style={{float:"right",marginRight:"10px"}}>
-                                Ward:{paitent.Ward_Id}
+                                Ward:{patient.Ward_Id}
                             </span>                            
                         </div>
                         

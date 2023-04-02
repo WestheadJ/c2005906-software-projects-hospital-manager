@@ -125,7 +125,7 @@ app.get("/get/paitents/nurse",(req,res)=>{
 
 app.get("/get/paitents/doctor",(req,res)=>{
     const doctor_id = req.query.doctor_id
-    db.all("SELECT * FROM Paitents WHERE Doctor_Id=?",[doctor_id],(err,rows)=>{
+    db.all("SELECT Paitent_Forename,Paitent_Surname,Ward_Id,Paitent_Id FROM Paitents WHERE Doctor_Id=?",[doctor_id],(err,rows)=>{
         if(err){
             console.log(err)
             return res.send(err)

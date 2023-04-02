@@ -1,45 +1,34 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { storageHandler } from '../components/localStorageHandler'
 import NavBarHeader from '../components/NavBarHeader'
 import Paitents from '../components/Paitents'
 import { IP } from '../configs/configs'
 import "../styles/Dashboard.css"
+import Authenticator from '../components/authenticator'
 
 export default function Dashboard() {
     
-    const localStorageHandler = new storageHandler()
 
     const navigate = useNavigate()
     const location = useLocation()
 
-    const storage = localStorageHandler.getLocalStorage()
-
-    const storedId = storage.id
-    const storedToken = storage.token
+    
 
     const [data , setData] = useState([])
 
     useEffect(()=>{
-        console.log(location.state)
-        if(location.state == null){
-            localStorageHandler.clearLocalStorage()
-            return navigate("/login",{replace:true})
-        }   
-        else{
-            if(location.state.id != storedId || location.state.token != storedToken){
-                localStorageHandler.clearLocalStorage()
-                return navigate("/login",{replace:true})
-            }
-        }
-        if(location.state.role === "Nurse"){
+        try{if(location.state.role === "Nurse"){
 
             getNursesPaitents()
         }
         if(location.state.role === "Doctor"){
             getDoctorsPaitents()
         
+        }}
+        catch{
+            return navigate("/login",{replace:true})
+
         }
         },[])
         
@@ -77,10 +66,11 @@ export default function Dashboard() {
 
     return(
         <>
-            <div>
+            <Authenticator />
+            {/* <div>
                 {location.state == null ? <></> : <NavBarHeader role={location.state.role} person_id={location.state.id} />}
             </div>
-            <Paitents data={data} role={location.state.role}/>
+            <Paitents data={data} role={location.state.role}/> */}
             
         </>
     )

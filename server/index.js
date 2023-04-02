@@ -4,8 +4,7 @@ const app = express()
 const cors = require('cors')
 const fs = require('fs')
 const { hospitalCode } = require('./configs/config')
-const networkInterface = require('os').networkInterfaces()
-const IP = networkInterface['en0'][1].address
+const IP = "127.0.0.1";
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());

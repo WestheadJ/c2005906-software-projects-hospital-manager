@@ -15,19 +15,17 @@ export default function Authenticator() {
 
     const navigate = useNavigate();
     const location = useLocation();
-    
-console.log(location.state)
 
-if(location.state == null){
-    localStorageHandler.clearLocalStorage()
-    return navigate("/login",{replace:true})
-}   
-else{
-    if(location.state.id != storedId || location.state.token != storedToken){
+    if (location.state == null) {
         localStorageHandler.clearLocalStorage()
-        return navigate("/login",{replace:true})
+        return window.location.replace("/login")
     }
-}
+    else {
+        if (location.state.id != storedId || location.state.token != storedToken) {
+            localStorageHandler.clearLocalStorage()
+            return window.location.replace("/login")
+        }
+    }
 
 
 }

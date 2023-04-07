@@ -14,8 +14,12 @@ export default function Dashboard() {
 
     const [data, setData] = useState([])
 
+    useEffect(() => {
+        isCorrectRole()
+    }, [])
+
     async function getNursesPatients() {
-        await axios.get(`${IP}/get/paitents/nurse`, {
+        await axios.get(`${IP}/get/patients/nurse`, {
             params: {
                 nurse_id: location.state.id
             }
@@ -33,7 +37,7 @@ export default function Dashboard() {
     }
 
     async function getDoctorsPatients() {
-        await axios.get(`${IP}/get/paitents/doctor`, {
+        await axios.get(`${IP}/get/patients/doctor`, {
             params: {
                 doctor_id: location.state.id
             }
@@ -59,7 +63,7 @@ export default function Dashboard() {
             return getDoctorsPatients()
 
         } else {
-            return navigate("/login", { replace: true })
+            return window.location.replace("/login")
 
         }
     }
@@ -67,13 +71,12 @@ export default function Dashboard() {
     return (
         <>
             <Authenticator />
-            {isCorrectRole()}
 
             <div>
                 {!location.state ? <></> : <NavBarHeader role={location.state.role} person_id={location.state.id} />}
             </div>
 
-            {!location.state ? <></> : <Paitents data={data} role={location.state.role} />}
+            <Paitents data={data} role={location.state.role} />
 
         </>
     )

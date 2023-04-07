@@ -9,7 +9,7 @@ export default function Paitents({ data, role }) {
     const navigate = useNavigate()
 
     function toPatientsProfile(patient_id) {
-        navigate("/patient-profile")
+        navigate("/patient-profile", { state: { role: role } })
     }
 
     async function getPatientsInfo(patient) {
@@ -31,7 +31,7 @@ export default function Paitents({ data, role }) {
                 <div style={{ width: '50%' }}>
                     {data.map((patient) => {
                         return (
-                            <div key={patient.Patient_Id} className="patient-card">
+                            <div key={patient.Patient_Id} className="patient-card" onClick={toPatientsProfile}>
                                 <span stlye={{ float: "left" }}>
                                     {patient.Paitent_Forename}
                                     {patient.Paitent_Surname}

@@ -1,5 +1,6 @@
 import React from 'react'
-import { useLocation,useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
+import NavBarHeader from '../components/NavBarHeader'
 
 export default function PatientProfile() {
 
@@ -8,7 +9,7 @@ export default function PatientProfile() {
 
   return (
     <>
-      <div>PatientProfile</div>
+      {!location.state ? <></> : <NavBarHeader role={location.state.role} />}
     </>
   )
 }

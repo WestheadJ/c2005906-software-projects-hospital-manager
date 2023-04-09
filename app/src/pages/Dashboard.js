@@ -52,7 +52,7 @@ export default function Dashboard() {
 
     function isCorrectRole() {
         if (!location.state) {
-            console.log(true)
+
             return window.location.replace("/login")
 
         }

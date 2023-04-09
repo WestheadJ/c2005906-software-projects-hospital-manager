@@ -17,11 +17,12 @@ const db = new sqlite.Database('configs/hospital-management.db')
 
 const folderName = "data"
 
+
 try {
     if (!fs.existsSync(folderName)) {
         fs.mkdirSync(folderName)
     }
-    const sql = "SELECT Paitent_id FROM Paitents"
+    const sql = "SELECT Paitent_id FROM Patients"
     db.all(sql, (err, rows) => {
 
         if (err) {
@@ -111,7 +112,7 @@ app.get('/login', (req, res) => {
 
 app.get("/get/patients/nurse", (req, res) => {
     const id = req.query.nurse_id
-    const sql = "SELECT DISTINCT Paitents.Paitent_Id,Paitents.Paitent_Forename,Paitents.Paitent_Surname,Paitents.Ward_Id FROM Paitents INNER JOIN Wards on Paitents.Ward_Id = Wards.Ward_id INNER JOIN Nurses on Wards.Ward_Manager = ?"
+    const sql = "SELECT DISTINCT Patients.Paitent_Id,Patients.Paitent_Forename,Patients.Paitent_Surname,Patients.Ward_Id FROM Patients INNER JOIN Wards on Patients.Ward_Id = Wards.Ward_id INNER JOIN Nurses on Wards.Ward_Manager = ?"
     db.all(sql, [id], (err, rows) => {
         if (err) {
             console.log(err)
@@ -124,8 +125,8 @@ app.get("/get/patients/nurse", (req, res) => {
 })
 
 app.get("/get/patients/doctor", (req, res) => {
-    const doctor_id = req.query.doctor_id
-    db.all("SELECT Paitent_Forename,Paitent_Surname,Ward_Id,Paitent_Id FROM Paitents WHERE Doctor_Id=?", [doctor_id], (err, rows) => {
+    const doctorId = req.query.doctor_id
+    db.all("SELECT Paitent_Forename,Paitent_Surname,Ward_Id,Paitent_Id FROM Patients WHERE Doctor_Id=?", [doctorId], (err, rows) => {
         if (err) {
             console.log(err)
             return res.send(err)
@@ -139,37 +140,76 @@ app.get("/get/patients/doctor", (req, res) => {
 app.get("/get/patients/file", (req, res) => {
     const id = req.query.id
     const role = req.query.role
-    const patient_id = req.query.patient_id
+    const patientId = req.query.patient_id
 
 
     if (role === "Doctor") {
-        db.get("SELECT Doctor_Id FROM Doctors WHERE Doctor_Id=" + id)
         var data
-        fs.readFile(`data/${patient_id}.json`, (err, contents) => {
+
+        db.get(`SELECT Doctor_Id FROM Doctors WHERE Doctor_Id=${id}`, (err, row) => {
             if (err) {
-                return res.send(err)
+                console.log(err)
             }
             else {
-                data = JSON.parse(contents)
-                return res.json({ "Medications": data.Medications, "Healthcare_Plan": data.Healthcare_Plan, "Records": data.Records })
-
+                if (row.Doctor_id == id) {
+                    fs.readFile(`data/${patientId}.json`, (err, contents) => {
+                        if (err) {
+                            return res.send(err)
+                        }
+                        else {
+                            data = JSON.parse(contents)
+                            db.get(`SELECT * FROM Patients WHERE Paitent_Id=${patientId}`, (err, row) => {
+                                if (err) {
+                                    console.log(err)
+                                    return res.send("ERROR")
+                                }
+                                else {
+                                    return res.json({ "patient_data": row, "Medications": data.Medications, "Healthcare_Plan": data.Healthcare_Plan, "Records": data.Records })
+                                }
+                            })
+                        }
+                    })
+                }
+                else {
+                    res.send("ERROR")
+                }
             }
         })
+
 
     }
     else if (role === "Nurse") {
-        fs.readFile(`data/${id}.json`, (err, contents) => {
+        var data
+        db.get(`SELECT Doctor_Id FROM Doctors WHERE Doctor_Id=${id}`, (err, row) => {
             if (err) {
-                return res.send(err)
+                console.log(err)
             }
             else {
-                data = JSON.parse(contents)
-                console.log(data)
-                return res.json({ "Medications": data.Medications, "Healthcare_Plan": data.Healthcare_Plan })
+                if (row.Nurse_Id == patientId) {
+                    fs.readFile(`data/${id}.json`, (err, contents) => {
+                        if (err) {
+                            return res.send(err)
+                        }
+                        else {
+                            db.get(`SELECT * FROM Patients WHERE Paitent_Id=${patientId}`, (err, row) => {
+                                if (err) {
+                                    console.log(err)
+                                    return res.send("ERROR")
+                                }
+                                else {
+                                    data = JSON.parse(contents)
+                                    return res.json({ "patient_data": row, "Medications": data.Medications, "Healthcare_Plan": data.Healthcare_Plan })
+                                }
+                            })
+                        }
+                    }
+                    )
+                }
             }
         })
+    } else {
+        res.send("ERROR")
     }
-
 })
 
 app.post("/register", (req, res) => {

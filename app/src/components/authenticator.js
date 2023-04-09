@@ -1,9 +1,6 @@
-import React from 'react'
 import { storageHandler } from '../components/localStorageHandler'
 
-import { useLocation, useNavigate } from 'react-router-dom'
-
-
+import { useLocation } from 'react-router-dom'
 
 export default function Authenticator() {
     const localStorageHandler = new storageHandler()
@@ -13,16 +10,19 @@ export default function Authenticator() {
     const storedId = storage.id
     const storedToken = storage.token
 
-    const navigate = useNavigate();
     const location = useLocation();
 
-    if (location.state == null) {
+    if (!location.state) {
         localStorageHandler.clearLocalStorage()
+        alert("You need to log in")
         return window.location.replace("/login")
     }
     else {
+        // eslint-disable-next-line
         if (location.state.id != storedId || location.state.token != storedToken) {
             localStorageHandler.clearLocalStorage()
+            alert("You need to log in")
+
             return window.location.replace("/login")
         }
     }

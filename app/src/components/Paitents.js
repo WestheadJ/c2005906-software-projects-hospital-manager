@@ -1,29 +1,14 @@
-
-import axios from "axios"
-import { IP } from "../configs/configs"
-import { useEffect } from "react"
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function Paitents({ data, role }) {
 
     const navigate = useNavigate()
+    const location = useLocation()
 
     function toPatientsProfile(patient_id) {
-        navigate("/patient-profile", { state: { role: role } })
+        navigate("/patient-profile", { state: { role: role, token: location.state.token, id: location.state.id, patient_id: patient_id } })
     }
 
-    async function getPatientsInfo(patient) {
-        await axios.get(`${IP}/get/patients/file`, {
-            params: {
-                given_id: patient.Paitent_Id,
-                given_role: role
-            }
-        })
-            .then((response) => {
-                console.log(response.data)
-            })
-            .catch(err => console.log(err))
-    }
 
     return (
         <>
@@ -31,7 +16,7 @@ export default function Paitents({ data, role }) {
                 <div style={{ width: '50%' }}>
                     {data.map((patient) => {
                         return (
-                            <div key={patient.Patient_Id} className="patient-card" onClick={toPatientsProfile}>
+                            <div key={patient.Paitent_Id} className="patient-card" onClick={() => { toPatientsProfile(patient.Paitent_Id) }}>
                                 <span stlye={{ float: "left" }}>
                                     {patient.Paitent_Forename}
                                     {patient.Paitent_Surname}

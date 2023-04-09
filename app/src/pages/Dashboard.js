@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import NavBarHeader from '../components/NavBarHeader'
 import Paitents from '../components/Paitents'
 import { IP } from '../configs/configs'
@@ -9,13 +9,14 @@ import Authenticator from '../components/authenticator'
 
 export default function Dashboard() {
 
-    const navigate = useNavigate()
     const location = useLocation()
 
     const [data, setData] = useState([])
 
+
     useEffect(() => {
         isCorrectRole()
+        // eslint-disable-next-line
     }, [])
 
     async function getNursesPatients() {
@@ -26,13 +27,11 @@ export default function Dashboard() {
         })
             .then(async (response) => {
                 setData(response.data)
-                // setLoading(true)
-                console.log(data)
 
             })
             .catch(err => {
                 console.log(err)
-                // setLoading(false)
+                alert("Error Getting Patients")
             })
     }
 
@@ -46,7 +45,9 @@ export default function Dashboard() {
                 console.log(response.data)
                 return setData(response.data)
             })
-            .catch((err) => console.log(err))
+            .catch((err) => {
+                console.log(err); alert("Error Getting Patients")
+            })
     }
 
     function isCorrectRole() {
@@ -70,13 +71,19 @@ export default function Dashboard() {
 
     return (
         <>
+            {/* <<--- Authentication --->> */}
             <Authenticator />
-
             <div>
-                {!location.state ? <></> : <NavBarHeader role={location.state.role} person_id={location.state.id} />}
+                {!location.state ? <></> :
+                    <>
+                        {/* <<--- Nav Bar --->> */}
+                        <NavBarHeader role={location.state.role} person_id={location.state.id} />
+                        {/* <<--- Main Content */}
+                        <Paitents data={data} role={location.state.role} />
+                    </>
+                }
             </div>
 
-            <Paitents data={data} role={location.state.role} />
 
         </>
     )

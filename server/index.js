@@ -137,11 +137,15 @@ app.get("/get/patients/doctor", (req, res) => {
 })
 
 app.get("/get/patients/file", (req, res) => {
-    const id = req.query.given_id
-    const role = req.query.given_role
+    const id = req.query.id
+    const role = req.query.role
+    const patient_id = req.query.patient_id
+
+
     if (role === "Doctor") {
+        db.get("SELECT Doctor_Id FROM Doctors WHERE Doctor_Id=" + id)
         var data
-        fs.readFile(`data/${id}.json`, (err, contents) => {
+        fs.readFile(`data/${patient_id}.json`, (err, contents) => {
             if (err) {
                 return res.send(err)
             }

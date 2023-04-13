@@ -1,1 +1,1 @@
-{"Paitent_id":5,"Medications":[],"Healthcare_Plan":[],"Records":[]}
+{"Paitent_id":5,"Medications":[],"Healthcare_Plan":{"Medications":[{"medication":"ibruprofen","instructions":"2 every 2 hours"},{"medication":"morphine","instructions":"every 5hrs"}],"Text":"Keep plan for 2 days, if patient feels better after 2 days "},"Records":[]}

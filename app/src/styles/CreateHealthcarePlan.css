@@ -1,0 +1,45 @@
+.main-container {
+    display: flex;
+    flex: column;
+}
+
+.main-container div{
+    margin: 1.5em 1em 1.5em 1em ;
+    width: 100%;
+}
+
+
+#plan-actions{
+    width: 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+textarea{
+    width: 100%;
+    height: 30em;
+    border-radius:25px ;
+    padding:1em;
+}
+
+#plan-actions Button{
+    width: 100%;
+    margin: 0.5em;
+}
+
+#plan-brief{
+    margin: 2rem;
+    
+}
+
+.remove-medication{
+    text-decoration: underline;
+    margin-left: 2rem;
+}
+
+.remove-medication:hover{
+    cursor: pointer;
+    color: #98C1D9;
+
+}

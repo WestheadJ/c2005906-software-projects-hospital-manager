@@ -8,6 +8,8 @@ import ErrorPage from './pages/ErrorPage';
 import Login from './pages/Login'
 import Register from './pages/Register';
 import PatientProfile from './pages/PatientProfile';
+import CreateHealthcarePlan from './pages/CreateHealthcarePlan';
+import EditHealthcarePlan from './pages/EditHealthcarePlan';
 
 
 const router = createBrowserRouter(
@@ -28,6 +30,14 @@ const router = createBrowserRouter(
     {
       path: "/patient-profile",
       element: <PatientProfile />
+    },
+    {
+      path: "/create-healthcare-plan",
+      element: <CreateHealthcarePlan />
+    },
+    {
+      path: "/edit-healthcare-plan",
+      element: <EditHealthcarePlan />
     }
   ]
 )

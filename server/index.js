@@ -36,7 +36,11 @@ try {
                     {
                         "Paitent_id": id.Paitent_Id,
                         "Medications": [],
-                        "Healthcare_Plan": [],
+                        "Healthcare_Plan": {
+                            "Medications": [],
+                            "Text": "",
+
+                        },
                         "Records": []
                     }
                     var contents = JSON.stringify(boilerPlate)
@@ -46,9 +50,43 @@ try {
                             console.log(err)
                         }
                         else {
-                            console.log('Successful')
+                            // console.log('Successful')
                         }
                     })
+                })
+            }
+            else {
+                let files = []
+                dataFiles.forEach(file => {
+                    files.push(file.split("."[0]))
+                })
+
+                rows.forEach(patient => {
+                    if (!files.includes(patient.Paitent_Id)) {
+                    }
+                    else {
+                        var boilerPlate =
+                        {
+                            "Paitent_id": patient.Paitent_Id,
+                            "Medications": [],
+                            "Healthcare_Plan": {
+                                "Medications": [],
+                                "Text": "",
+
+                            },
+                            "Records": []
+                        }
+                        var contents = JSON.stringify(boilerPlate)
+
+                        fs.writeFile(`data/${patient.Paitent_Id}.json`, contents, err => {
+                            if (err) {
+                                console.log(err)
+                            }
+                            else {
+                                console.log('Successful')
+                            }
+                        })
+                    }
                 })
             }
         }
@@ -60,6 +98,32 @@ catch (err) {
 
 const PORT = 3001;
 
+async function Authenticate(role, id) {
+    if (role === "Doctor") {
+        db.get(`SELECT Doctor_id From Doctors WHERE Doctor_id=${id}`, (err, row) => {
+            if (err) {
+                console.log(err)
+                return false
+            }
+            else {
+                if (row.Doctor_id == id) { return true } else {
+                    console.log("Error")
+                    return false
+                }
+            }
+        })
+    }
+    else if (role === "Nurse") {
+        db.get(`SELECT Nurse_Id From Nurses WHERE Nurse_Id=${id}`, (err, row) => {
+            if (err) {
+                console.log(err)
+                return false
+            }
+            else { if (row.Nurse_Id == id) { return true } else return false }
+        })
+    }
+    else return false
+}
 app.listen(PORT, () => console.log(`Server address is: http://${IP}:${PORT} \nTo test go to: http://${IP}:${PORT}/test `));
 
 app.get('/test', (req, res) => res.send("<h1>Test Endpoint</h1>"))
@@ -137,77 +201,64 @@ app.get("/get/patients/doctor", (req, res) => {
     })
 })
 
+app.get("/get/healthcare-plan", (req, res) => {
+    const patientId = req.query.patient_id
+    const clientId = req.query.id
+    const clientRole = req.query.role
+
+
+    if (Authenticate(clientRole, clientId)) {
+        fs.readFile(`data/${patientId}.json`, (err, contents) => {
+            if (err) {
+                console.log(err)
+                return res.send(err)
+            }
+            else {
+                contents = JSON.parse(contents)
+                return res.json(contents.Healthcare_Plan)
+            }
+        })
+    }
+    else {
+        res.send("ERROR")
+    }
+})
+
 app.get("/get/patients/file", (req, res) => {
     const id = req.query.id
     const role = req.query.role
     const patientId = req.query.patient_id
 
 
-    if (role === "Doctor") {
-        var data
-
-        db.get(`SELECT Doctor_Id FROM Doctors WHERE Doctor_Id=${id}`, (err, row) => {
+    if (Authenticate(role, id)) {
+        fs.readFile(`data/${patientId}.json`, (err, contents) => {
             if (err) {
-                console.log(err)
+                return res.send(err)
             }
             else {
-                if (row.Doctor_id == id) {
-                    fs.readFile(`data/${patientId}.json`, (err, contents) => {
-                        if (err) {
-                            return res.send(err)
-                        }
-                        else {
-                            data = JSON.parse(contents)
-                            db.get(`SELECT * FROM Patients WHERE Paitent_Id=${patientId}`, (err, row) => {
-                                if (err) {
-                                    console.log(err)
-                                    return res.send("ERROR")
-                                }
-                                else {
-                                    return res.json({ "patient_data": row, "Medications": data.Medications, "Healthcare_Plan": data.Healthcare_Plan, "Records": data.Records })
-                                }
+                data = JSON.parse(contents)
+                db.get(`SELECT * FROM Patients WHERE Paitent_Id=${patientId}`, (err, row) => {
+                    if (err) {
+                        console.log(err)
+                        return res.send("ERROR")
+                    }
+                    else {
+                        if (role === "Nurse") {
+                            return res.json({
+                                "patient_data": row,
+                                "Medications": data.Medications,
+                                "Healthcare_Plan": data.Healthcare_Plan
                             })
                         }
-                    })
-                }
-                else {
-                    res.send("ERROR")
-                }
-            }
-        })
-
-
-    }
-    else if (role === "Nurse") {
-        var data
-        db.get(`SELECT Doctor_Id FROM Doctors WHERE Doctor_Id=${id}`, (err, row) => {
-            if (err) {
-                console.log(err)
-            }
-            else {
-                if (row.Nurse_Id == patientId) {
-                    fs.readFile(`data/${id}.json`, (err, contents) => {
-                        if (err) {
-                            return res.send(err)
-                        }
                         else {
-                            db.get(`SELECT * FROM Patients WHERE Paitent_Id=${patientId}`, (err, row) => {
-                                if (err) {
-                                    console.log(err)
-                                    return res.send("ERROR")
-                                }
-                                else {
-                                    data = JSON.parse(contents)
-                                    return res.json({ "patient_data": row, "Medications": data.Medications, "Healthcare_Plan": data.Healthcare_Plan })
-                                }
-                            })
+                            return res.json({ "patient_data": row, "Medications": data.Medications, "Healthcare_Plan": data.Healthcare_Plan, "Records": data.Records })
                         }
                     }
-                    )
-                }
+                })
             }
         })
-    } else {
+    }
+    else {
         res.send("ERROR")
     }
 })
@@ -255,5 +306,50 @@ app.post("/register", (req, res) => {
         return res.send(false)
     }
 
+})
+
+app.put("/edit/healthcare-plan", (req, res) => {
+    const patientId = req.body.patient_id
+    let text = req.body.text
+    let medications = req.body.medications
+    const id = req.body.id
+    const role = req.body.role
+
+    if (!req.body.role) {
+        res.send("No role")
+    }
+    else {
+        if (Authenticate(role, id)) {
+            fs.readFile(`data/${patientId}.json`, (err, contents) => {
+                if (err) {
+                    console.log(err)
+                    res.send(err)
+                }
+                else {
+                    contents = JSON.parse(contents)
+                    let healthcareJson = contents.Healthcare_Plan
+                    healthcareJson.Medications = medications
+                    healthcareJson.Text = text
+                    contents.Healthcare_Plan = healthcareJson
+
+
+                    contents = JSON.stringify(contents)
+                    fs.writeFile(`data/${patientId}.json`, contents, err => {
+                        if (err) {
+                            console.log(err)
+                            res.send(err)
+                        }
+                        else {
+                            console.log('Successful')
+                            res.send("Success")
+                        }
+                    })
+                }
+            })
+        }
+        else {
+            res.send("ERROR")
+        }
+    }
 })
 

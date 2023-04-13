@@ -100,7 +100,7 @@ const PORT = 3001;
 
 async function Authenticate(role, id) {
     if (role === "Doctor") {
-        db.get(`SELECT Doctor_id From Doctors WHERE Doctor_id=${id}`, (err, row) => {
+        await db.get(`SELECT Doctor_id From Doctors WHERE Doctor_id=${id}`, (err, row) => {
             if (err) {
                 console.log(err)
                 return false
@@ -112,17 +112,18 @@ async function Authenticate(role, id) {
                 }
             }
         })
+
     }
     else if (role === "Nurse") {
-        db.get(`SELECT Nurse_Id From Nurses WHERE Nurse_Id=${id}`, (err, row) => {
+        await db.get(`SELECT Nurse_Id From Nurses WHERE Nurse_Id=${id}`, (err, row) => {
             if (err) {
                 console.log(err)
                 return false
             }
-            else { if (row.Nurse_Id == id) { return true } else return false }
+            else { if (row.Nurse_Id == id) { return true } else { return false } }
         })
     }
-    else return false
+    else { return false }
 }
 app.listen(PORT, () => console.log(`Server address is: http://${IP}:${PORT} \nTo test go to: http://${IP}:${PORT}/test `));
 
@@ -353,3 +354,37 @@ app.put("/edit/healthcare-plan", (req, res) => {
     }
 })
 
+app.put(`/edit/medications`, (req, res) => {
+    const role = req.body.role;
+    const id = req.body.id
+    const patientId = req.body.patient_id
+    const medications = req.body.medications
+
+    if (Authenticate(role, id)) {
+
+        fs.readFile(`data/${patientId}.json`, (err, contents) => {
+            if (err) {
+                console.log(err)
+                return res.send(err)
+            }
+            else {
+                contents = JSON.parse(contents)
+                contents.Medications = medications
+                contents = JSON.stringify(contents)
+                fs.writeFile(`data/${patientId}.json`, contents, err => {
+                    if (err) {
+                        console.log(err)
+                        res.send(err)
+                    }
+                    else {
+                        console.log('Successful')
+                        res.send("Success")
+                    }
+                })
+            }
+        })
+    }
+    else {
+        res.send("ERROR")
+    }
+})

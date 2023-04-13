@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import NavBarHeader from '../components/NavBarHeader'
 import Authenticator from '../components/authenticator'
 import axios from "axios"
 import { IP } from "../configs/configs"
 import "../styles/PatientProfile.css"
-import { Button } from 'react-bootstrap'
+import { Button, Modal } from 'react-bootstrap'
 
 export default function PatientProfile() {
 
@@ -23,10 +23,18 @@ export default function PatientProfile() {
   const [healthcareMedication, setHealthcareMedication] = useState([])
   const [patientRecords, setPatientRecords] = useState([])
 
+  const [showMedicationModal, setShowMedicationModal] = useState(false);
+  const [modalMedication, setModalMedication] = useState("")
+  const [modalMedicationInstruction, setModalMedicationInstructions] = useState("")
 
-  useEffect(() => {
-    getInfo()
-  }, [])
+
+  function handleCloseMedicationModal() {
+    setShowMedicationModal(false)
+    setModalMedication("")
+    setModalMedicationInstructions("")
+  };
+  const handleShowMedicationModal = () => setShowMedicationModal(true);
+
 
   async function getInfo() {
     await axios.get(`${IP}/get/patients/file`, {
@@ -75,6 +83,31 @@ export default function PatientProfile() {
     })
   }
 
+  async function saveChanges() {
+    setMedications([...medications, { medication: modalMedication, instructions: modalMedicationInstruction }])
+
+
+    await axios.put(`${IP}/edit/medications`, {
+      role: location.state.role,
+      id: location.state.id,
+      patient_id: location.state.patient_id,
+      medications: [...medications, { medication: modalMedication, instructions: modalMedicationInstruction }]
+    })
+      .then((err, res) => {
+        if (err) {
+          console.log(err)
+          return alert(err)
+        }
+        else return handleCloseMedicationModal()
+      })
+  }
+
+
+
+  useEffect(() => {
+    getInfo()
+  }, [])
+
   return (
     <>
       {/* <<--- Authentication --->> */}
@@ -92,7 +125,16 @@ export default function PatientProfile() {
               <h4>Patient Surname: {patientSurname}</h4>
               <h4>Patient DOB: {patientDOB}</h4>
               <h4>Patient Ward_Id: {patientWardId}</h4>
-              <h3>Medications:{medications}</h3>
+              <h3>Medications:
+                {medications.map((item, key) => {
+                  return (<div key={key}>
+                    <h5>Medication:</h5>
+                    <p>- {item.medication}</p>
+                    <h5>Instructions:</h5>
+                    <p>{item.instructions}</p>
+                  </div>)
+                })}
+              </h3>
               <hr />
               <h3>Patient Contact Details</h3>
               <hr />
@@ -139,7 +181,7 @@ export default function PatientProfile() {
               <div id="patient-info-controls">
                 <Button onClick={createHealthcarePlan}>+ Create New Healthcare Plan</Button>
                 <Button onClick={editHealthcarePlan}>Edit Healthcare Plan</Button>
-                <Button>+ New Medicine</Button>
+                <Button onClick={handleShowMedicationModal}>+ New Medicine</Button>
                 <Button>+ Create New Appointment</Button>
                 <Button>Transfer Patient</Button>
               </div>
@@ -147,6 +189,30 @@ export default function PatientProfile() {
             </div>
             {/* {location.state.role == "Doctor" ? <></> : <p>Appointments: No Appointments</p>} */}
           </div>
+
+          {/* Add Medication Modal */}
+          <Modal style={{ color: "#293241", }} show={showMedicationModal} onHide={handleCloseMedicationModal}>
+            <Modal.Header style={{ backgroundColor: "#98C1D9" }} closeButton>
+              <Modal.Title>Add A Medication</Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{ backgroundColor: "#98C1D9", justifyContent: "center" }}>
+              <label for="medication">Medication:</label>
+              <input name="medication" onChange={e => setModalMedication(e.target.value)} type="text" />
+
+              <label for="instructions">Medication Instructions</label>
+              <textarea onChange={e => setModalMedicationInstructions(e.target.value)} name='instructions'>
+
+              </textarea>
+            </Modal.Body>
+            <Modal.Footer style={{ backgroundColor: "#98C1D9" }}>
+              <Button variant="secondary" onClick={handleCloseMedicationModal}>
+                Close
+              </Button>
+              <Button variant="primary" onClick={saveChanges}>
+                Add Medication
+              </Button>
+            </Modal.Footer>
+          </Modal>
         </>
       }
     </>

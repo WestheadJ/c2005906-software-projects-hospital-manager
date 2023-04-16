@@ -1,10 +1,11 @@
 import React from 'react'
 import { Container, Navbar, Nav } from "react-bootstrap"
 import "../styles/NavBarHeader.css"
-import { useNavigate } from "react-router-dom"
+import { useLocation, useNavigate } from "react-router-dom"
 
 export default function NavBarHeader({ role, person_id }) {
     const navigate = useNavigate();
+    const location = useLocation()
 
     function logout() {
         navigate('/login')
@@ -19,7 +20,7 @@ export default function NavBarHeader({ role, person_id }) {
                     <Nav >
                         <Nav.Link onClick={(e) => {
                             e.preventDefault()
-                            navigate('/')
+                            navigate('/', { state: location.state })
                         }} className='navbar-item'>Dashboard</Nav.Link>
                         <Nav.Link className='navbar-item' onClick={(e) => {
                             e.preventDefault()

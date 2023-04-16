@@ -33,8 +33,7 @@ export default function PatientProfile() {
   const [modalTransferDoctor, setModalTransferDoctor] = useState("")
   const [showTransferWardModal, setShowTransferWardModal] = useState(false)
   const [showTransferDoctorModal, setShowTransferDoctorModal] = useState(false)
-
-
+  const [doctorName, setDoctorName] = useState("")
 
   function handleCloseMedicationModal() {
     setShowMedicationModal(false)
@@ -122,7 +121,6 @@ export default function PatientProfile() {
       ward_id: modalTransferWard
     })
       .then((res, err) => {
-        console.log(res)
         if (err) {
           console.log(err)
           alert("ERROR")
@@ -130,6 +128,10 @@ export default function PatientProfile() {
         else {
           if (res.data === "Success") {
             handleCloseTransferWardModal()
+
+            if (location.state.role === "Nurse") {
+              navigate("/", { state: location.state })
+            }
           }
           return alert("ERROR")
         }
@@ -137,7 +139,26 @@ export default function PatientProfile() {
   }
 
   function transferDoctor() {
-    console.log("Transfering Doctor")
+    console.log(location.state.patient_id, modalTransferDoctor)
+    axios.put(`${IP}/transfer/doctor`, {
+      role: location.state.role,
+      id: location.state.id,
+      patient_id: location.state.patient_id,
+      doctor_id: modalTransferDoctor
+    })
+      .then((res, err) => {
+        if (err) {
+          console.log(err)
+          alert("ERROR")
+        }
+        else {
+          if (res.data === "Success") {
+            handleCloseTransferDoctorModal()
+            navigate("/", { state: location.state })
+          }
+          return alert("ERROR")
+        }
+      })
   }
 
   function handleShowTransferWardModal() {
@@ -270,11 +291,11 @@ export default function PatientProfile() {
                 <Button onClick={editHealthcarePlan}>Edit Healthcare Plan</Button>
                 <Button onClick={handleShowMedicationModal}>+ New Medicine</Button>
                 <Button onClick={createRecord}>+ Create New Record</Button>
-                <Dropdown>
+                <Dropdown >
                   <Dropdown.Toggle variant='primary'>Transfer Patient</Dropdown.Toggle>
-                  <Dropdown.Menu>
+                  <Dropdown.Menu >
                     <Dropdown.Item onClick={handleShowTransferWardModal}>Transfer To Another Ward</Dropdown.Item>
-                    <Dropdown.Item onClick={handleShowTransferDoctorModal}>Transfer To Another Doctor</Dropdown.Item>
+                    {location.state.role === "Doctor" ? <Dropdown.Item onClick={handleShowTransferDoctorModal}>Transfer To Another Doctor</Dropdown.Item> : <></>}
                   </Dropdown.Menu>
                 </Dropdown>
               </div>
@@ -350,13 +371,14 @@ export default function PatientProfile() {
               <Modal.Title>Transfer Patients Doctor</Modal.Title>
             </Modal.Header>
             <Modal.Body style={{ backgroundColor: "#98C1D9", justifyContent: "center" }}>
-              <h3>Transfer to Dr: </h3>
+              <h3>Transfer to Dr: {doctorName} </h3>
               <h3>Doctor to Transfer:</h3>
               {doctors.map((doctor, key) => {
                 console.log(doctor)
                 return (<>
                   {doctor.Doctor_id !== location.state.id ? <><div className='ward' onClick={e => {
-                    setModalTransferDoctor(doctor.Doctor_Id)
+                    setModalTransferDoctor(doctor.Doctor_id)
+                    setDoctorName(doctor.Doctor_Firstname + " " + doctor.Doctor_Surname)
                   }} key={key}>
                     <p>{doctor.Doctor_Firstname} {doctor.Doctor_Surname}</p>
                   </div></> : <></>}
@@ -368,14 +390,14 @@ export default function PatientProfile() {
 
             </Modal.Body>
             <Modal.Footer style={{ backgroundColor: "#98C1D9" }}>
-              <Button variant="secondary" onClick={handleCloseTransferWardModal}>
+              <Button variant="secondary" onClick={handleCloseTransferDoctorModal}>
                 Cancel
               </Button>
               <Button variant="primary" onClick={() => {
-                if (modalTransferWard === "") {
-                  return alert("Please select a ward")
+                if (modalTransferDoctor === "") {
+                  return alert("Please select a doctor")
                 }
-                return transferWard()
+                return transferDoctor()
               }}>
                 Transfer Patient
               </Button>

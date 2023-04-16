@@ -1,15 +1,17 @@
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import NavBarHeader from '../components/NavBarHeader'
 import Paitents from '../components/Paitents'
 import { IP } from '../configs/configs'
 import "../styles/Dashboard.css"
 import Authenticator from '../components/authenticator'
+import { Button } from 'react-bootstrap'
 
 export default function Dashboard() {
 
     const location = useLocation()
+    const navigate = useNavigate()
 
     const [data, setData] = useState([])
 
@@ -80,6 +82,11 @@ export default function Dashboard() {
                         <NavBarHeader role={location.state.role} person_id={location.state.id} />
                         {/* <<--- Main Content */}
                         <Paitents data={data} role={location.state.role} />
+                        <div style={{ justifyContent: "center", width: "100%", display: "flex" }}>
+                            <Button onClick={() => {
+                                navigate("/register-patient", { state: location.state })
+                            }}>Register a new Patient</Button>
+                        </div>
                     </>
                 }
             </div>

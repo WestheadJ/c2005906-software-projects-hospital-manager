@@ -388,3 +388,106 @@ app.put(`/edit/medications`, (req, res) => {
         res.send("ERROR")
     }
 })
+
+app.post("/create/new-record", (req, res) => {
+    const role = req.body.role
+    const id = req.body.id
+    const patientId = req.body.patient_id
+    const title = req.body.title
+    const content = req.body.content
+
+    if (Authenticate(role, id)) {
+        fs.readFile(`data/${patientId}.json`, (err, contents) => {
+
+            if (err) {
+                return res.send("Error")
+            }
+            else {
+                let data = JSON.parse(contents)
+                data.Records.push({ title: title, content: content })
+                fs.writeFile(`data/${patientId}.json`, JSON.stringify(data), err => {
+                    if (err) {
+                        console.log(err)
+                        return res.send(err)
+                    }
+                    else {
+                        console.log('Successful')
+                        return res.send("Success")
+                    }
+                })
+            }
+
+        })
+    }
+})
+
+app.get("/get/wards", (req, res) => {
+    const role = req.params.role
+    const id = req.params.id
+
+    if (Authenticate(role, id)) {
+        db.all("SELECT DISTINCT ward_id FROM wards", (err, rows) => {
+            if (err) {
+                console.log(err)
+                return res.send("ERROR")
+            }
+            return res.send(rows)
+        })
+    } else {
+        return res.send("ERROR")
+    }
+})
+
+app.get("/get/doctors", (req, res) => {
+    const role = req.params.role
+    const id = req.body.role
+
+    if (Authenticate(role, id)) {
+        db.all("SELECT Doctor_id,Doctor_Firstname,Doctor_Surname FROM DOCTORS", (err, rows) => {
+            if (err) {
+                console.log(err)
+                return res.send("ERROR")
+            }
+            else { return res.send(rows) }
+        })
+    }
+    else { return res.send("ERROR") }
+})
+
+app.put("/transfer/ward", (req, res) => {
+    const role = req.body.role
+    const id = req.body.id
+    const patientId = req.body.patient_id
+    const wardId = req.body.ward_id
+
+    if (Authenticate(role, id)) {
+        db.run(`UPDATE Patients SET Ward_Id=${wardId} WHERE Paitent_Id=${patientId}`, err => {
+            if (err) {
+                console.log(err)
+                return res.send("ERROR")
+            }
+            else {
+                return res.send("Success")
+            }
+        })
+    }
+})
+
+app.put("/transfer/doctor", (req, res) => {
+    const role = req.body.role
+    const id = req.body.id
+    const patientId = req.body.patient_id
+    const doctorId = req.body.doctor_id
+
+    if (Authenticate(role, id)) {
+        db.run(`UPDATE Patients SET Doctor_Id=${doctorId} WHERE Paitent_Id=${patientId}`, err => {
+            if (err) {
+                console.log(err)
+                return res.send("ERROR")
+            }
+            else {
+                return res.send("Success")
+            }
+        })
+    }
+})

@@ -10,6 +10,7 @@ import Register from './pages/Register';
 import PatientProfile from './pages/PatientProfile';
 import CreateHealthcarePlan from './pages/CreateHealthcarePlan';
 import EditHealthcarePlan from './pages/EditHealthcarePlan';
+import CreateRecord from './pages/CreateRecord';
 
 
 const router = createBrowserRouter(
@@ -38,6 +39,10 @@ const router = createBrowserRouter(
     {
       path: "/edit-healthcare-plan",
       element: <EditHealthcarePlan />
+    },
+    {
+      path: "/create-record",
+      element: <CreateRecord />
     }
   ]
 )

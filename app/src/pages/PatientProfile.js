@@ -5,7 +5,7 @@ import Authenticator from '../components/authenticator'
 import axios from "axios"
 import { IP } from "../configs/configs"
 import "../styles/PatientProfile.css"
-import { Button, Modal } from 'react-bootstrap'
+import { Accordion, Button, Dropdown, Modal } from 'react-bootstrap'
 
 export default function PatientProfile() {
 
@@ -26,6 +26,14 @@ export default function PatientProfile() {
   const [showMedicationModal, setShowMedicationModal] = useState(false);
   const [modalMedication, setModalMedication] = useState("")
   const [modalMedicationInstruction, setModalMedicationInstructions] = useState("")
+
+  const [wards, setWards] = useState([])
+  const [doctors, setDoctors] = useState([])
+  const [modalTransferWard, setModalTransferWard] = useState("")
+  const [modalTransferDoctor, setModalTransferDoctor] = useState("")
+  const [showTransferWardModal, setShowTransferWardModal] = useState(false)
+  const [showTransferDoctorModal, setShowTransferDoctorModal] = useState(false)
+
 
 
   function handleCloseMedicationModal() {
@@ -102,7 +110,75 @@ export default function PatientProfile() {
       })
   }
 
+  function createRecord() {
+    navigate("/create-record", { state: location.state })
+  }
 
+  function transferWard() {
+    axios.put(`${IP}/transfer/ward`, {
+      role: location.state.role,
+      id: location.state.id,
+      patient_id: location.state.patient_id,
+      ward_id: modalTransferWard
+    })
+      .then((res, err) => {
+        console.log(res)
+        if (err) {
+          console.log(err)
+          alert("ERROR")
+        }
+        else {
+          if (res.data === "Success") {
+            handleCloseTransferWardModal()
+          }
+          return alert("ERROR")
+        }
+      })
+  }
+
+  function transferDoctor() {
+    console.log("Transfering Doctor")
+  }
+
+  function handleShowTransferWardModal() {
+    axios.get(`${IP}/get/wards`, {
+      params: {
+        role: location.state.role,
+        id: location.state.id
+      }
+    })
+      .then(res => {
+        setWards(res.data)
+      })
+    setShowTransferWardModal(true)
+  }
+
+  function handleCloseTransferWardModal() {
+    setPatientWardId(modalTransferWard)
+
+    setShowTransferWardModal(false)
+    setModalTransferWard("")
+  }
+
+  function handleShowTransferDoctorModal() {
+    setShowTransferDoctorModal(true)
+    getDoctors()
+  }
+
+  function handleCloseTransferDoctorModal() {
+    setShowTransferDoctorModal(false)
+  }
+
+  function getDoctors() {
+    axios.get(`${IP}/get/doctors`, { params: { role: location.state.role, id: location.state.id } })
+      .then((res, err) => {
+        if (err) {
+          console.log(err)
+          return alert("ERROR")
+        }
+        return setDoctors(res.data)
+      })
+  }
 
   useEffect(() => {
     getInfo()
@@ -169,9 +245,20 @@ export default function PatientProfile() {
 
             {location.state.role === "Doctor" ? <div className='patient-info-records'>
               <h3>Records:</h3>
-              {!patientRecords ? <>{patientRecords.map(item => {
-                return <>Item</>
-              })}</> : <>No records on file</>}
+              {!patientRecords ? <>No records on file</> :
+                <>
+                  <Accordion>
+                    {patientRecords.map((item, i) => {
+                      return (
+
+                        <Accordion.Item eventKey={i}>
+                          <Accordion.Header>{item.title}</Accordion.Header>
+                          <Accordion.Body>{item.content}</Accordion.Body>
+                        </Accordion.Item>
+                      )
+                    })}
+                  </Accordion>
+                </>}
             </div> :
               <></>
             }
@@ -182,8 +269,14 @@ export default function PatientProfile() {
                 <Button onClick={createHealthcarePlan}>+ Create New Healthcare Plan</Button>
                 <Button onClick={editHealthcarePlan}>Edit Healthcare Plan</Button>
                 <Button onClick={handleShowMedicationModal}>+ New Medicine</Button>
-                <Button>+ Create New Appointment</Button>
-                <Button>Transfer Patient</Button>
+                <Button onClick={createRecord}>+ Create New Record</Button>
+                <Dropdown>
+                  <Dropdown.Toggle variant='primary'>Transfer Patient</Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    <Dropdown.Item onClick={handleShowTransferWardModal}>Transfer To Another Ward</Dropdown.Item>
+                    <Dropdown.Item onClick={handleShowTransferDoctorModal}>Transfer To Another Doctor</Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
               </div>
 
             </div>
@@ -210,6 +303,81 @@ export default function PatientProfile() {
               </Button>
               <Button variant="primary" onClick={saveChanges}>
                 Add Medication
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          {/* Transfer Ward Modal */}
+          <Modal style={{ color: "#293241", }} show={showTransferWardModal} onHide={handleCloseTransferWardModal}>
+            <Modal.Header style={{ backgroundColor: "#98C1D9" }} closeButton>
+              <Modal.Title>Transfer Patients Ward</Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{ backgroundColor: "#98C1D9", justifyContent: "center" }}>
+              <h3>Current Ward: {patientWardId} | Transfer to Ward: {modalTransferWard}</h3>
+              <h3>Wards To Transfer Patient:</h3>
+              {wards.map((ward, key) => {
+                return (<>
+                  {ward.Ward_Id === patientWardId ? <></> : <><div className='ward' onClick={e => {
+                    setModalTransferWard(ward.Ward_Id)
+                  }} key={key}>
+                    <p>{ward.Ward_Id}</p>
+                  </div></>}
+
+
+                </>
+                )
+              })}
+
+            </Modal.Body>
+            <Modal.Footer style={{ backgroundColor: "#98C1D9" }}>
+              <Button variant="secondary" onClick={handleCloseTransferWardModal}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => {
+                if (modalTransferWard === "") {
+                  return alert("Please select a ward")
+                }
+                return transferWard()
+              }}>
+                Transfer Patient
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          {/* Transfer Doctor Modal */}
+          <Modal style={{ color: "#293241", }} show={showTransferDoctorModal} onHide={handleCloseTransferDoctorModal}>
+            <Modal.Header style={{ backgroundColor: "#98C1D9" }} closeButton>
+              <Modal.Title>Transfer Patients Doctor</Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{ backgroundColor: "#98C1D9", justifyContent: "center" }}>
+              <h3>Transfer to Dr: </h3>
+              <h3>Doctor to Transfer:</h3>
+              {doctors.map((doctor, key) => {
+                console.log(doctor)
+                return (<>
+                  {doctor.Doctor_id !== location.state.id ? <><div className='ward' onClick={e => {
+                    setModalTransferDoctor(doctor.Doctor_Id)
+                  }} key={key}>
+                    <p>{doctor.Doctor_Firstname} {doctor.Doctor_Surname}</p>
+                  </div></> : <></>}
+
+
+                </>
+                )
+              })}
+
+            </Modal.Body>
+            <Modal.Footer style={{ backgroundColor: "#98C1D9" }}>
+              <Button variant="secondary" onClick={handleCloseTransferWardModal}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={() => {
+                if (modalTransferWard === "") {
+                  return alert("Please select a ward")
+                }
+                return transferWard()
+              }}>
+                Transfer Patient
               </Button>
             </Modal.Footer>
           </Modal>

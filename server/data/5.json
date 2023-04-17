@@ -1,1 +1,1 @@
-{"Paitent_id":5,"Medications":[],"Healthcare_Plan":{"Medications":[{"medication":"ibruprofen","instructions":"2 every 2 hours"},{"medication":"morphine","instructions":"every 5hrs"}],"Text":"Keep plan for 2 days, if patient feels better after 2 days "},"Records":[{"title":"2023-3-15","content":"Patient came in with a broken leg\n- Healthcare plan consisted of painkillers\nPatient also got a plaster and will come see me again in 3 weeks for a new plaster"}]}
+{"Paitent_id":5,"Medications":[],"Healthcare_Plan":{"Medications":[],"Text":""},"Records":[]}

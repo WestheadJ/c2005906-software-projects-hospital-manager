@@ -50,7 +50,7 @@ try {
                             console.log(err)
                         }
                         else {
-                            // console.log('Successful')
+                            console.log('Successful')
                         }
                     })
                 })
@@ -58,11 +58,15 @@ try {
             else {
                 let files = []
                 dataFiles.forEach(file => {
-                    files.push(file.split("."[0]))
+                    files.push(file.split(".")[0])
                 })
 
+                // console.log(files)
+
                 rows.forEach(patient => {
-                    if (!files.includes(patient.Paitent_Id)) {
+                    // console.log(files.includes(patient.Paitent_Id.toString()))
+                    if (files.includes(patient.Paitent_Id.toString())) {
+                        return console.log("File already exists")
                     }
                     else {
                         var boilerPlate =
@@ -98,32 +102,34 @@ catch (err) {
 
 const PORT = 3001;
 
-async function Authenticate(role, id) {
+function Authenticate(role, id) {
+    let authorised = false
     if (role === "Doctor") {
-        await db.get(`SELECT Doctor_id From Doctors WHERE Doctor_id=${id}`, (err, row) => {
+        db.get(`SELECT Doctor_id From Doctors WHERE Doctor_id=${id}`, (err, row) => {
             if (err) {
                 console.log(err)
-                return false
+                return authorised = false
             }
             else {
-                if (row.Doctor_id == id) { return true } else {
+                if (row.Doctor_id == id) { return authorised = true } else {
                     console.log("Error")
-                    return false
+                    return authorised = false
                 }
             }
         })
 
     }
     else if (role === "Nurse") {
-        await db.get(`SELECT Nurse_Id From Nurses WHERE Nurse_Id=${id}`, (err, row) => {
+        db.get(`SELECT Nurse_Id From Nurses WHERE Nurse_Id=${id}`, (err, row) => {
             if (err) {
                 console.log(err)
-                return false
+                return authorised = false
             }
-            else { if (row.Nurse_Id == id) { return true } else { return false } }
+            else { if (row.Nurse_Id == id) { return authorised = true } else { return authorised = false } }
         })
     }
-    else { return false }
+    else { return authorised = false }
+    return authorised
 }
 app.listen(PORT, () => console.log(`Server address is: http://${IP}:${PORT} \nTo test go to: http://${IP}:${PORT}/test `));
 

@@ -28,11 +28,12 @@ export default function CreateRecord() {
             title: date
         }).then((res, err) => {
             if (err) {
-                console.log(err)
-                alert("There was an error")
+                // DEBUG
+                // console.log(err)
+                return alert("There was an error")
             }
             if (res.data === 'Success') {
-                navigate("/patient-profile", { state: location.state })
+                return navigate("/patient-profile", { state: location.state })
             }
         })
     }

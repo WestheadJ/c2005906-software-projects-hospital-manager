@@ -41,17 +41,20 @@ export default function EditHealthcarePlan() {
                 medications: medications,
                 id: location.state.id
             }).then((res, err) => {
-                console.log(res.data)
+                // DEBUG
+                // console.log(res.data)
                 if (res.data === "Success") {
                     navigate("/patient-profile", { state: location.state })
                 }
                 if (err) {
-                    console.log(err)
-                    alert("ERROR")
+                    // DEBUG
+                    // console.log(err)
+                    return alert("ERROR")
                 }
                 else {
-                    console.log(err)
-                    alert("ERROR")
+                    // DEBUG
+                    // console.log(err)
+                    return alert("ERROR")
                 }
 
             })
@@ -66,15 +69,17 @@ export default function EditHealthcarePlan() {
             }
         })
             .then((res, err) => {
-                console.log(res.data)
+                // DEBUG
+                // console.log(res.data)
                 if (err) {
-                    console.log(err)
-                    alert(err)
+                    // DEBUG
+                    // console.log(err)
+                    return alert(err)
                 }
                 else {
 
                     setMedications(res.data.Medications)
-                    setTextAreaValue(res.data.Text)
+                    return setTextAreaValue(res.data.Text)
                 }
             })
     }

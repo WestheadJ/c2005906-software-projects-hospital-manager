@@ -28,12 +28,13 @@ export default function Dashboard() {
             }
         })
             .then(async (response) => {
-                setData(response.data)
+                return setData(response.data)
 
             })
             .catch(err => {
-                console.log(err)
-                alert("Error Getting Patients")
+                // DEBUG
+                // console.log(err)
+                return alert("Error Getting Patients")
             })
     }
 
@@ -44,11 +45,13 @@ export default function Dashboard() {
             }
         })
             .then((response) => {
-                console.log(response.data)
+                // DEBUG
+                // console.log(response.data)
                 return setData(response.data)
             })
             .catch((err) => {
-                console.log(err); alert("Error Getting Patients")
+                // DEBUG
+                // console.log(err); alert("Error Getting Patients")
             })
     }
 

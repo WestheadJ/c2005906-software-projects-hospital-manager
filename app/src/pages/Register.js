@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Card, Button, DropdownButton, Dropdown } from 'react-bootstrap'
 import "../styles/Register.css"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
 import axios from 'axios';
 import { IP } from '../configs/configs';
 import "../styles/Register.css"
@@ -34,7 +34,8 @@ export default function Register() {
                     role: role
                 }
             ).then((res) => {
-                console.log(res)
+                // DEBUG
+                // console.log(res)
                 if (res.data === true) {
                     navigate("/login", { replace: true })
                 }
@@ -43,7 +44,9 @@ export default function Register() {
                 }
             })
                 .catch((err) => {
-                    console.log(err)
+                    // ERROR
+                    // console.log(err)
+                    alert("ERROR")
                 })
         }
         else {
@@ -117,7 +120,9 @@ export default function Register() {
 
                     <Button id="registerButton" onClick={() => {
                         Register()
-                    }}>Login</Button>
+                    }}>Register</Button>
+
+                    <Link to="/login" id='login-link'>Already registered? Login here</Link>
                 </Card.Body>
             </Card>
         </div>

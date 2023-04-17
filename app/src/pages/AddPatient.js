@@ -38,7 +38,8 @@ export default function AddPatient() {
         axios.get(`${IP}/get/doctors`, { params: { role: location.state.role, id: location.state.id } })
             .then((res, err) => {
                 if (err) {
-                    console.log(err)
+                    // DEBUG
+                    // console.log(err)
                     return alert("ERROR")
                 }
                 else {
@@ -51,7 +52,8 @@ export default function AddPatient() {
         await axios.get(`${IP}/get/wards`, { params: { role: location.state.role, id: location.state.id } })
             .then((res, err) => {
                 if (err) {
-                    console.log(err)
+                    // DEBUG
+                    // console.log(err)
                     return alert("ERROR")
                 }
                 else {
@@ -82,7 +84,8 @@ export default function AddPatient() {
         })
             .then((res, err) => {
                 if (err) {
-                    console.log(err)
+                    // DEBUG
+                    // console.log(err)
                     return alert("ERROR")
                 }
                 else {

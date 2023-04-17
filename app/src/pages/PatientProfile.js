@@ -35,6 +35,16 @@ export default function PatientProfile() {
   const [showTransferDoctorModal, setShowTransferDoctorModal] = useState(false)
   const [doctorName, setDoctorName] = useState("")
 
+  const [showDischargeModal, setShowDischargeModal] = useState(false);
+
+  function handleShowDischargeModal() {
+    setShowDischargeModal(true)
+  }
+
+  function handleCloseDischargeModal() {
+    setShowDischargeModal(false)
+  }
+
   function handleCloseMedicationModal() {
     setShowMedicationModal(false)
     setModalMedication("")
@@ -52,6 +62,8 @@ export default function PatientProfile() {
       }
     }).then((res) => {
       let patient = res.data.patient_data
+      // DEBUG:
+      // console.log(res.data)
       setPatientForename(patient.Paitent_Forename)
       setPatientSurname(patient.Paitent_Surname)
       setPatientDOB(patient.Paitent_Dob)
@@ -63,17 +75,18 @@ export default function PatientProfile() {
       setHealthcareText(res.data.Healthcare_Plan.Text)
       if (location.state.role === "Doctor") {
         if (res.data.Records.length === 0) {
-          setPatientRecords([])
+          return setPatientRecords([])
         }
         else {
-          setPatientRecords(res.data.Records)
+          return setPatientRecords(res.data.Records)
         }
       }
 
     })
       .catch((err) => {
-        alert("There was an error")
-        console.log(err)
+        return alert("There was an error")
+        // DEBUG:
+        // console.log(err)
       })
 
   }
@@ -102,7 +115,8 @@ export default function PatientProfile() {
     })
       .then((err, res) => {
         if (err) {
-          console.log(err)
+          // DEBUG
+          // console.log(err)
           return alert(err)
         }
         else return handleCloseMedicationModal()
@@ -122,7 +136,8 @@ export default function PatientProfile() {
     })
       .then((res, err) => {
         if (err) {
-          console.log(err)
+          // DEBUG
+          // console.log(err)
           alert("ERROR")
         }
         else {
@@ -139,7 +154,8 @@ export default function PatientProfile() {
   }
 
   function transferDoctor() {
-    console.log(location.state.patient_id, modalTransferDoctor)
+    // DEBUG
+    // console.log(location.state.patient_id, modalTransferDoctor)
     axios.put(`${IP}/transfer/doctor`, {
       role: location.state.role,
       id: location.state.id,
@@ -148,7 +164,8 @@ export default function PatientProfile() {
     })
       .then((res, err) => {
         if (err) {
-          console.log(err)
+          // DEBUG
+          // console.log(err)
           alert("ERROR")
         }
         else {
@@ -194,11 +211,23 @@ export default function PatientProfile() {
     axios.get(`${IP}/get/doctors`, { params: { role: location.state.role, id: location.state.id } })
       .then((res, err) => {
         if (err) {
-          console.log(err)
+          // DEBUG
+          // console.log(err)
           return alert("ERROR")
         }
         return setDoctors(res.data)
       })
+  }
+
+  function transferPatient() {
+    axios.delete(`${IP}/discharge`, { params: { id: location.state.id, role: location.state.role, patient_id: location.state.patient_id } }).then(res => {
+      if (res.data === "Success") {
+        navigate("/", { state: location.state })
+      }
+      else {
+        alert("ERROR")
+      }
+    })
   }
 
   useEffect(() => {
@@ -297,6 +326,7 @@ export default function PatientProfile() {
                     <Dropdown.Item onClick={handleShowTransferWardModal}>Transfer To Another Ward</Dropdown.Item>
                     {location.state.role === "Doctor" ? <Dropdown.Item onClick={handleShowTransferDoctorModal}>Transfer To Another Doctor</Dropdown.Item> : <></>}
                   </Dropdown.Menu>
+                  <Button variant='danger'>Transfer Patient</Button>
                 </Dropdown>
               </div>
 
@@ -374,7 +404,8 @@ export default function PatientProfile() {
               <h3>Transfer to Dr: {doctorName} </h3>
               <h3>Doctor to Transfer:</h3>
               {doctors.map((doctor, key) => {
-                console.log(doctor)
+                // DEBUG
+                // console.log(doctor)
                 return (<>
                   {doctor.Doctor_id !== location.state.id ? <><div className='ward' onClick={e => {
                     setModalTransferDoctor(doctor.Doctor_id)
@@ -400,6 +431,28 @@ export default function PatientProfile() {
                 return transferDoctor()
               }}>
                 Transfer Patient
+              </Button>
+            </Modal.Footer>
+          </Modal>
+
+          {/* Discharge Modal */}
+          <Modal style={{ color: "#293241", }} show={showDischargeModal} onHide={handleCloseDischargeModal}>
+            <Modal.Header style={{ backgroundColor: "#98C1D9" }} closeButton>
+              <Modal.Title>Discharge Patient?</Modal.Title>
+            </Modal.Header>
+            <Modal.Body style={{ backgroundColor: "#98C1D9", justifyContent: "center" }}>
+              <p>Are you sure you want to discharge this patient?</p>
+
+            </Modal.Body>
+            <Modal.Footer style={{ backgroundColor: "#98C1D9" }}>
+
+              <Button variant="danger" onClick={() => {
+                transferPatient()
+              }}>
+                Transfer Patient
+              </Button>
+              <Button variant="secondary" onClick={handleCloseDischargeModal}>
+                Cancel
               </Button>
             </Modal.Footer>
           </Modal>

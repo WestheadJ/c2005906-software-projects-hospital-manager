@@ -41,17 +41,20 @@ export default function CreateHealthcarePlan() {
                 medications: medications,
                 id: location.state.id
             }).then((res, err) => {
-                console.log(res.data)
+                // DEBUG
+                // console.log(res.data)
                 if (res.data === "Success") {
                     navigate("/patient-profile", { state: location.state })
                 }
                 if (err) {
-                    console.log(err)
-                    alert("ERROR")
+                    // DEBUG
+                    // console.log(err)
+                    return alert("ERROR")
                 }
                 else {
-                    console.log(err)
-                    alert("ERROR")
+                    // DEBUG
+                    // console.log(err)
+                    return alert("ERROR")
                 }
 
             })

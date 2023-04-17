@@ -512,9 +512,9 @@ app.post("/add/patient", (req, res) => {
     const emergencyContact2Mobile = req.body.emergency_contact_2_mobile
     const emergencyContact2Email = req.body.emergency_contact_2_email
 
-    console.log(req.body, "\n")
+    // console.log(req.body, "\n")
 
-    console.log(role, id, wardId, doctorId, forename, surname, mobile, dob, email, emergencyContact1Forename, emergencyContact1Surname, emergencyContact1Mobile, emergencyContact1Email, emergencyContact2Forename, emergencyContact2Surname, emergencyContact2Mobile, emergencyContact2Email)
+    // console.log(role, id, wardId, doctorId, forename, surname, mobile, dob, email, emergencyContact1Forename, emergencyContact1Surname, emergencyContact1Mobile, emergencyContact1Email, emergencyContact2Forename, emergencyContact2Surname, emergencyContact2Mobile, emergencyContact2Email)
 
     if (Authenticate(role, id)) {
         const sql = "INSERT INTO Patients(Doctor_Id,Ward_Id,Paitent_Forename,Paitent_Surname,Paitent_Mobile_Number,Paitent_Dob,Paitent_Email,Paitent_Emergency_Contact_1_Forename,Paitent_Emergency_Contact_1_Surname,Paitent_Emergency_Contact_1_Mobile_Number,Paitent_Email,Paitent_Emergency_Contact_2_Forename,Paitent_Emergency_Contact_2_Surname,Paitent_Emergency_Contact_2_Mobile_Number,Paitent_Emergency_Contact_2_Email) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)"
@@ -528,10 +528,35 @@ app.post("/add/patient", (req, res) => {
             })
 
         })
-        db.get("SELECT Paitent_Id FROM Patients", (err, rows) => {
+        db.all("SELECT Paitent_Id FROM Patients", (err, rows) => {
             if (err) {
                 console.log(err)
                 return res.send("ERROR")
+            }
+            else {
+                console.log(rows)
+                var boilerPlate =
+                {
+                    "Paitent_id": rows[(rows.length - 1)].Paitent_Id,
+                    "Medications": [],
+                    "Healthcare_Plan": {
+                        "Medications": [],
+                        "Text": "",
+
+                    },
+                    "Records": []
+                }
+                var contents = JSON.stringify(boilerPlate)
+
+                fs.writeFile(`data/${rows[(rows.length - 1)].Paitent_Id}.json`, contents, err => {
+                    if (err) {
+                        console.log(err)
+                    }
+                    else {
+                        console.log('Successful')
+                        return res.send("Success")
+                    }
+                })
             }
         })
     }

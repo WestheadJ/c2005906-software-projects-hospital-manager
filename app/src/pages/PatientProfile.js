@@ -220,7 +220,7 @@ export default function PatientProfile() {
   }
 
   function transferPatient() {
-    axios.delete(`${IP}/discharge`, { params: { id: location.state.id, role: location.state.role, patient_id: location.state.patient_id } }).then(res => {
+    axios.delete(`${IP}/discharge?${location.state.patient_id}`).then(res => {
       if (res.data === "Success") {
         navigate("/", { state: location.state })
       }
@@ -326,8 +326,9 @@ export default function PatientProfile() {
                     <Dropdown.Item onClick={handleShowTransferWardModal}>Transfer To Another Ward</Dropdown.Item>
                     {location.state.role === "Doctor" ? <Dropdown.Item onClick={handleShowTransferDoctorModal}>Transfer To Another Doctor</Dropdown.Item> : <></>}
                   </Dropdown.Menu>
-                  <Button variant='danger'>Transfer Patient</Button>
                 </Dropdown>
+                <Button variant='danger' onClick={handleShowDischargeModal}>Discharge Patient</Button>
+
               </div>
 
             </div>
@@ -449,7 +450,7 @@ export default function PatientProfile() {
               <Button variant="danger" onClick={() => {
                 transferPatient()
               }}>
-                Transfer Patient
+                Discharge Patient
               </Button>
               <Button variant="secondary" onClick={handleCloseDischargeModal}>
                 Cancel

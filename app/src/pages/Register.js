@@ -118,7 +118,7 @@ export default function Register() {
                         setHospitalCode(e.target.value)
                     }} />
 
-                    <Button id="registerButton" onClick={() => {
+                    <Button style={{ width: "40%" }} id="registerButton" onClick={() => {
                         Register()
                     }}>Register</Button>
 

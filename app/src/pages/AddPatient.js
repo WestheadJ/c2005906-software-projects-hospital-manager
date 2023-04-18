@@ -4,6 +4,7 @@ import Authenticator from '../components/authenticator'
 import { Card, Button, Dropdown } from 'react-bootstrap'
 import axios from 'axios'
 import { IP } from '../configs/configs'
+import NavBarHeader from '../components/NavBarHeader'
 
 
 export default function AddPatient() {
@@ -104,118 +105,127 @@ export default function AddPatient() {
 
     return (
         <>
+            {/* <<--- Authentication --->> */}
             <Authenticator />
-            <Card id="patient-info" style={{
-                width: "88%", backgroundColor: "#98C1D9", margin: "15% auto auto auto"
-            }}>
-                <Card.Title style={{ textAlign: "center", paddingTop: "5%" }}><h1>Register Patient</h1></Card.Title>
-                <hr />
-                <Card.Body style={{ display: 'flex', flexDirection: "column" }}>
+            {!location.state ? <></> :
+                <>
+                    {/* <<--- Nav Bar --->> */}
+                    <NavBarHeader role={location.state.role} />
+                    <Card id="patient-info" style={{
+                        width: "88%", backgroundColor: "#98C1D9", margin: "15% auto auto auto"
+                    }}>
+                        <Card.Title style={{ textAlign: "center", paddingTop: "5%" }}><h1>Register Patient</h1></Card.Title>
+                        <hr />
+                        <Card.Body style={{ display: 'flex', flexDirection: "column" }}>
 
-                    <label>Selected Doctor: {doctorsName}</label>
-                    <Dropdown>
-                        <Dropdown.Toggle variant='primary'>Select Doctor</Dropdown.Toggle>
-                        <Dropdown.Menu >
-                            {doctors.map((item, key) => {
-                                return (<Dropdown.Item key={key} onClick={() => {
-                                    setDoctorsName(item.Doctor_Firstname + " " + item.Doctor_Surname)
-                                    setDoctorId(item.Doctor_id)
-                                }}>{item.Doctor_Firstname} {item.Doctor_Surname}</Dropdown.Item>)
+                            <label>Selected Doctor: {doctorsName}</label>
+                            <Dropdown>
+                                <Dropdown.Toggle variant='primary'>Select Doctor</Dropdown.Toggle>
+                                <Dropdown.Menu >
+                                    {doctors.map((item, key) => {
+                                        return (<Dropdown.Item key={key} onClick={() => {
+                                            setDoctorsName(item.Doctor_Firstname + " " + item.Doctor_Surname)
+                                            setDoctorId(item.Doctor_id)
+                                        }}>{item.Doctor_Firstname} {item.Doctor_Surname}</Dropdown.Item>)
 
-                            })}
-                        </Dropdown.Menu>
-                    </Dropdown>
+                                    })}
+                                </Dropdown.Menu>
+                            </Dropdown>
 
-                    <label>Selected Doctor: {wardId}</label>
-                    <Dropdown>
-                        <Dropdown.Toggle variant='primary'>Select Ward</Dropdown.Toggle>
-                        <Dropdown.Menu >
-                            {wards.map((item, key) => {
-                                return (<Dropdown.Item key={key} onClick={() => {
-                                    setWardId(item.Ward_Id)
-                                }}>{item.Ward_Id}</Dropdown.Item>)
+                            <label>Selected Doctor: {wardId}</label>
+                            <Dropdown>
+                                <Dropdown.Toggle variant='primary'>Select Ward</Dropdown.Toggle>
+                                <Dropdown.Menu >
+                                    {wards.map((item, key) => {
+                                        return (<Dropdown.Item key={key} onClick={() => {
+                                            setWardId(item.Ward_Id)
+                                        }}>{item.Ward_Id}</Dropdown.Item>)
 
-                            })}
-                        </Dropdown.Menu>
-                    </Dropdown>
+                                    })}
+                                </Dropdown.Menu>
+                            </Dropdown>
 
-                    <h3>Patient:</h3>
-                    <label for="forename">Forename:</label>
-                    <input type="text" name="forename" onChange={(e) => {
-                        setForename(e.target.value)
-                    }} placeholder='Forename*' />
+                            <h3>Patient:</h3>
+                            <label for="forename">Forename:</label>
+                            <input type="text" name="forename" onChange={(e) => {
+                                setForename(e.target.value)
+                            }} placeholder='Forename*' />
 
-                    <label for="surname">Surname:</label>
-                    <input name="surname" onChange={(e) => {
-                        setSurname(e.target.value)
-                    }} placeholder='Surname*' />
+                            <label for="surname">Surname:</label>
+                            <input name="surname" onChange={(e) => {
+                                setSurname(e.target.value)
+                            }} placeholder='Surname*' />
 
-                    <label for="mobile">Mobile Number*: </label>
-                    <input name="mobile" type="tel" onChange={(e) => {
-                        setMobile(e.target.value)
-                    }} placeholder='Mobile Number*' />
+                            <label for="mobile">Mobile Number*: </label>
+                            <input name="mobile" type="tel" onChange={(e) => {
+                                setMobile(e.target.value)
+                            }} placeholder='Mobile Number*' />
 
-                    <label for="email">Email Address: </label>
-                    <input name="email" onChange={(e) => {
-                        setEmail(e.target.value)
-                    }} placeholder='Email Address*' />
+                            <label for="email">Email Address: </label>
+                            <input name="email" onChange={(e) => {
+                                setEmail(e.target.value)
+                            }} placeholder='Email Address*' />
 
-                    <label for="dob">Date of Birth*: </label>
-                    <input name="dob" type="date" onChange={(e) => {
-                        setDob(e.target.value)
-                    }} placeholder='Date of Birth*' />
+                            <label for="dob">Date of Birth*: </label>
+                            <input name="dob" type="date" onChange={(e) => {
+                                setDob(e.target.value)
+                            }} placeholder='Date of Birth*' />
 
-                    <h3>Emergency Contacts:</h3>
-                    <h4>Emergency Contact 1</h4>
-                    <label for="emergency-contact-1-forename">Forename: </label>
-                    <input name="emergency-contact-1-forename" type="text" onChange={(e) => {
-                        setEmergencyContact1Forename(e.target.value)
-                    }} placeholder='Forename' />
+                            <h3>Emergency Contacts:</h3>
+                            <h4>Emergency Contact 1</h4>
+                            <label for="emergency-contact-1-forename">Forename: </label>
+                            <input name="emergency-contact-1-forename" type="text" onChange={(e) => {
+                                setEmergencyContact1Forename(e.target.value)
+                            }} placeholder='Forename' />
 
-                    <label for="emergency-contact-1-surname">Surname: </label>
-                    <input name="emergency-contact-1-surname" type="text" onChange={(e) => {
-                        setEmergencyContact1Surname(e.target.value)
-                    }} placeholder='Surname' />
+                            <label for="emergency-contact-1-surname">Surname: </label>
+                            <input name="emergency-contact-1-surname" type="text" onChange={(e) => {
+                                setEmergencyContact1Surname(e.target.value)
+                            }} placeholder='Surname' />
 
-                    <label for="emergency-contact-1-mobile">Mobile Number: </label>
-                    <input name="emergency-contact-1-mobile" type="mobile" onChange={(e) => {
-                        setEmergencyContact1Mobile(e.target.value)
-                    }} placeholder='Mobile Number' />
+                            <label for="emergency-contact-1-mobile">Mobile Number: </label>
+                            <input name="emergency-contact-1-mobile" type="mobile" onChange={(e) => {
+                                setEmergencyContact1Mobile(e.target.value)
+                            }} placeholder='Mobile Number' />
 
-                    <label for="emergency-contact-1-email">Email: </label>
-                    <input name="emergency-contact-1-email" type="email" onChange={(e) => {
-                        setEmergencyContact1Email(e.target.value)
-                    }} placeholder='Email Address' />
+                            <label for="emergency-contact-1-email">Email: </label>
+                            <input name="emergency-contact-1-email" type="email" onChange={(e) => {
+                                setEmergencyContact1Email(e.target.value)
+                            }} placeholder='Email Address' />
 
-                    <h4>Emergency Contact 2</h4>
-                    <label for="emergency-contact-2-forename">Forename: </label>
-                    <input name="emergency-contact-2-forename" type="text" onChange={(e) => {
-                        setEmergencyContact2Forename(e.target.value)
-                    }} placeholder='Forename' />
+                            <h4>Emergency Contact 2</h4>
+                            <label for="emergency-contact-2-forename">Forename: </label>
+                            <input name="emergency-contact-2-forename" type="text" onChange={(e) => {
+                                setEmergencyContact2Forename(e.target.value)
+                            }} placeholder='Forename' />
 
-                    <label for="emergency-contact-2-surname">Surname: </label>
-                    <input name="emergency-contact-2-surname" type="text" onChange={(e) => {
-                        setEmergencyContact2Surname(e.target.value)
-                    }} placeholder='Surname' />
+                            <label for="emergency-contact-2-surname">Surname: </label>
+                            <input name="emergency-contact-2-surname" type="text" onChange={(e) => {
+                                setEmergencyContact2Surname(e.target.value)
+                            }} placeholder='Surname' />
 
-                    <label for="emergency-contact-2-mobile">Mobile Number: </label>
-                    <input name="emergency-contact-2-mobile" type="mobile" onChange={(e) => {
-                        setEmergencyContact2Mobile(e.target.value)
-                    }} placeholder='Mobile Number' />
+                            <label for="emergency-contact-2-mobile">Mobile Number: </label>
+                            <input name="emergency-contact-2-mobile" type="mobile" onChange={(e) => {
+                                setEmergencyContact2Mobile(e.target.value)
+                            }} placeholder='Mobile Number' />
 
-                    <label for="emergency-contact-2-email">Email: </label>
-                    <input name="emergency-contact-2-email" type="email" onChange={(e) => {
-                        setEmergencyContact2Email(e.target.value)
-                    }} placeholder='Email Address' />
+                            <label for="emergency-contact-2-email">Email: </label>
+                            <input name="emergency-contact-2-email" type="email" onChange={(e) => {
+                                setEmergencyContact2Email(e.target.value)
+                            }} placeholder='Email Address' />
 
-                    <Button id="registerButton" onClick={() => {
-                        if (forename === "" || surname === "" || email === "" || mobile === "" || dob === "") {
-                            alert("Fill in empty fields marked with *")
-                        }
-                        else { return registerPatient() }
-                    }}>Register</Button>
-                </Card.Body>
-            </Card >
+                            <div style={{ display: 'flex', justifyContent: "flex-end", width: '100%' }}>
+                                <Button style={{ width: "20%", float: 'right' }} id="registerButton" onClick={() => {
+                                    if (forename === "" || surname === "" || email === "" || mobile === "" || dob === "") {
+                                        alert("Fill in empty fields marked with *")
+                                    }
+                                    else { return registerPatient() }
+                                }}>Register</Button>
+                            </div>
+
+                        </Card.Body>
+                    </Card >
+                </>}
         </>
     )
 }

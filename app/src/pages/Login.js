@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, Button, Dropdown, DropdownButton } from 'react-bootstrap'
 import "../styles/Login.css"
-import { Link, useNavigate } from "react-router-dom"
+import { BrowserRouter, Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs"
 import { v4 as uuid } from "uuid"
@@ -14,6 +14,7 @@ export default function Login() {
 
     useEffect(() => {
         localStorageHandler.clearLocalStorage()
+
     })
     const navigate = useNavigate()
 
